@@ -9,7 +9,8 @@ import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-
+import com.tia_0653.mobilebanking.room.User
+import com.tia_0653.mobilebanking.room.UserDB
 
 
 class loginView: AppCompatActivity() {
@@ -59,13 +60,19 @@ class loginView: AppCompatActivity() {
                 checkLogin = false
             }
 
-            if(username == "admin" && password == "0653") checkLogin = true
+            val db by lazy { UserDB(this) }
+            val userDao = db.UserDao()
 
-            getBundle()
-            if(mBundle == null) {
-                checkLogin = false
-                Snackbar.make(mainLayout, "register first", Snackbar.LENGTH_LONG).show()
-            }else if (username == Nama && password == Password ) {
+
+//            if(username == "admin" && password == "0653") checkLogin = true
+
+//            getBundle()
+//            if(mBundle == null) {
+//                checkLogin = false
+//                Snackbar.make(mainLayout, "register first", Snackbar.LENGTH_LONG).show()
+//            }else
+            val user: User? = userDao.getLogin(username, password)
+            if (user != null) {
                 checkLogin = true
             }else{
                 checkLogin = false

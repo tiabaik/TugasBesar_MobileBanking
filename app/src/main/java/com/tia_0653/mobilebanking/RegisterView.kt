@@ -15,6 +15,8 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.tia_0653.mobilebanking.databinding.RegisterViewBinding
+import com.tia_0653.mobilebanking.room.User
+import com.tia_0653.mobilebanking.room.UserDB
 import java.util.*
 import javax.xml.datatype.DatatypeConstants.MONTHS
 
@@ -110,7 +112,21 @@ class RegisterView : AppCompatActivity() {
 
 
             if (checkSignUp == true) {
+                // simpan data ke database
+                val db by lazy { UserDB(this) }
+                val userDao = db.UserDao()
+
+                val user = User(0, Name, Email, Password, TanggalLahir, NoTelp)
+                userDao.addUser(user)
+
                 val movetoLogin = Intent(this, loginView::class.java)
+                val bundle: Bundle = Bundle()
+                bundle.putString("username", Name)
+                bundle.putString("email", Email)
+                bundle.putString("Tanggallahir", TanggalLahir)
+                bundle.putString("password", Password)
+                bundle.putString("NoHandphone", NoTelp)
+                movetoLogin.putExtra("register", bundle)
                 startActivity(movetoLogin)
 
             } else {
