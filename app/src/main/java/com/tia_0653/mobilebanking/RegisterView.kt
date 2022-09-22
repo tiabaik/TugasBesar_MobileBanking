@@ -1,66 +1,130 @@
 package com.tia_0653.mobilebanking
 
+
+import android.app.DatePickerDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.Button
-import com.google.android.material.textfield.TextInputEditText
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.tia_0653.mobilebanking.databinding.RegisterViewBinding
+import java.util.*
+import javax.xml.datatype.DatatypeConstants.MONTHS
 
 class RegisterView : AppCompatActivity() {
-    private lateinit var email: TextInputLayout
-    private lateinit var username: TextInputLayout
-    private lateinit var password: TextInputLayout
-    private lateinit var passwordconfirm: TextInputLayout
-    private lateinit var TTL: TextInputLayout
-    private lateinit var hp: TextInputLayout
-    private lateinit var btnRegister: Button
+    private lateinit var itemBinding: RegisterViewBinding
+
+    private lateinit var signUpLayout: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.register_view)
-        val  btnLogin: Button = findViewById(R.id.btnLogin)
 
-        username = findViewById(R.id.tilUserName)
-        email = findViewById(R.id.tilEmail)
-        password = findViewById(R.id.tilRegisPassword)
-        passwordconfirm = findViewById(R.id.tilRegisPasswordConfirm)
-        TTL = findViewById(R.id.tiltanggalLahir)
-        hp = findViewById(R.id.tilNomorhp)
 
-        btnRegister = findViewById(R.id.btnRegister)
+        itemBinding = RegisterViewBinding.inflate(layoutInflater)
+        val view = itemBinding.root
+        setContentView(view)
 
-        btnRegister.setOnClickListener (View.OnClickListener{
+        itemBinding.etTTL.setOnClickListener {
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+            val dpd = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+
+                    // Display Selected date in textbox
+                    itemBinding.etTTL.setText("" + dayOfMonth + "/" + monthOfYear + "/" + year)
+
+                }, year, month, day)
+
+            dpd.show()
+        }
+
+        itemBinding.btnRegister.setOnClickListener(View.OnClickListener {
+
             val intent = Intent(this, loginView::class.java)
-            val mBundle = Bundle()
-            var error = true
-            //memasukkann data ke dalam bundle
-            mBundle.putString("username", username.editText?.text.toString())
-            mBundle.putString("email", email.editText?.text.toString())
-            mBundle.putString("password", password.editText?.text.toString())
-            mBundle.putString("passwordconfirm", passwordconfirm.editText?.text.toString())
-            mBundle.putString("Tanggallahir", TTL.editText?.text.toString())
-            mBundle.putString("NoHandphone", hp.editText?.text.toString())
+            val mbundle = Bundle()
 
-            //melakukan intent dengan memanggil bundle
-            intent.putExtra("register", mBundle)
+            val Name: String = itemBinding.tilUserName.editText?.getText().toString()
+            val Email: String = itemBinding.tilEmail.editText?.getText().toString()
+            val Password: String = itemBinding.tilRegisPassword.editText?.getText().toString()
+            val PasswordConfirm: String = itemBinding.tilRegisPasswordConfirm.editText?.getText().toString()
+            val TanggalLahir: String = itemBinding.etTTL.getText().toString()
+            val NoTelp: String = itemBinding.tilNomorhp.editText?.getText().toString()
 
 
+            var checkSignUp = true
 
-            if (password.editText?.text.toString() != passwordconfirm.editText?.text.toString()) {
-                password.setError("Password tidak sama")
-                passwordconfirm.setError("Password tidak sama")
-                error = false
+            if (Name.isEmpty()) {
+                itemBinding.tilUserName.setError("Name must be filled with text")
+                checkSignUp = false
             }
-            if(!error)return@OnClickListener
-            startActivity(intent)
+
+            if (NoTelp.isEmpty()) {
+                itemBinding.tilNomorhp.setError("Phone Number must be filled with text")
+                checkSignUp = false
+            }
+
+            if (Email.isEmpty()) {
+                itemBinding.tilEmail.setError("E-mail must be filled with text")
+                checkSignUp = false
+            }
+
+            if (!Email.matches(Regex("^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"))) {
+                itemBinding.tilEmail.setError("Email tidak valid")
+                checkSignUp = false
+            }
+
+            if (TanggalLahir.isEmpty()) {
+                itemBinding.etEmail.setError("Birth Date must be filled with text")
+                checkSignUp = false
+            }
+
+            if (Password.isEmpty()) {
+                itemBinding.etPassword.setError("Password must be filled with text")
+                checkSignUp = false
+            }
+
+            if (PasswordConfirm.isEmpty()) {
+                itemBinding.etPasswordConfirm.setError("Password Confirmation must be filled with text")
+                checkSignUp = false
+            }
+
+            if (Password != PasswordConfirm) {
+                itemBinding.etPasswordConfirm.setError("Password Confirmation doesn't match with password")
+                checkSignUp = false
+            }
+            if (NoTelp.length != 12) {
+                itemBinding.etPasswordConfirm.setError("Phone Number length must be 12 digit")
+                checkSignUp = false
+            }
+
+
+            if (checkSignUp == true) {
+                val movetoLogin = Intent(this, loginView::class.java)
+                startActivity(movetoLogin)
+
+            } else {
+                return@OnClickListener
+            }
+
+
         })
 
-            btnLogin.setOnClickListener{
-            val moveloginView = Intent(this,loginView::class.java)
-            startActivity(moveloginView)
-        }
+        itemBinding.btnLogin.setOnClickListener(View.OnClickListener {
+            val movetoLogin = Intent(this, loginView::class.java)
+            startActivity(movetoLogin)
+        })
+
     }
 
 }
