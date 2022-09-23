@@ -27,12 +27,12 @@ class FragmentProfile : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedPreferences = this.getActivity()?.getSharedPreferences("userlog", Context.MODE_PRIVATE)
-        val nameTxt :TextView =  view.findViewById(R.id.tvname)
-        val emailTxt :TextView =  view.findViewById(R.id.tvemail)
-        val TTlTxt :TextView =  view.findViewById(R.id.tvttl)
-        val NoTxt :TextView =  view.findViewById(R.id.tvnohp)
+        val nameTxt :TextView =  view.findViewById(R.id.tv_nama)
+        val emailTxt :TextView =  view.findViewById(R.id.tv_email)
+        val TTlTxt :TextView =  view.findViewById(R.id.tv_ttl)
+        val NoTxt :TextView =  view.findViewById(R.id.tv_nohp)
         val id = sharedPreferences?.getString("id", "")
-        val btnEdit : Button = view.findViewById(R.id.editBTN)
+        val btnEdit : Button = view.findViewById(R.id.editBtn)
 
         nameTxt.setText(db?.UserDao()?.getUser(id!!.toInt())?.UserName.toString())
         emailTxt.setText(db?.UserDao()?.getUser(id!!.toInt())?.Email.toString())
