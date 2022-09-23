@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_bankk_24.xml" value="0.177" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_contact_phone_24.xml" value="0.2415" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_exit_to_app_24.xml" value="0.2415" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_person_24.xml" value="0.2415" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/activity_splash_screen.xml" value="0.25052083333333336" />
-        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_profile.xml" value="0.4" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_edit.xml" value="0.4" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/login_view.xml" value="0.23854166666666668" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/register_view.xml" value="0.264" />
         <entry key="..\:/guided/guided_PBP/TugasBesar_MobileBanking/app/src/main/res/layout/activity_home.xml" value="0.253125" />

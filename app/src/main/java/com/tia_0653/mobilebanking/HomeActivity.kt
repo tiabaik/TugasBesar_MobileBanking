@@ -27,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
                     return@setOnNavigationItemReselectedListener
                 }
                 R.id.profile -> {
-                    loadFragment(Fragment())
+                    loadFragment(FragmentProfile())
                     return@setOnNavigationItemReselectedListener
                 }
                 R.id.exit -> {
@@ -45,4 +45,12 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    fun setActionBarTitle(title: String) {
+        supportActionBar?.title = title
+    }
+
+    fun setActivity(activity: AppCompatActivity){
+        val moveActivity = Intent(this, activity::class.java)
+        startActivity(moveActivity)
+    }
 }

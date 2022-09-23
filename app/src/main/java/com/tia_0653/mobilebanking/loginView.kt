@@ -1,6 +1,8 @@
 package com.tia_0653.mobilebanking
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -14,10 +16,13 @@ import com.tia_0653.mobilebanking.room.UserDB
 
 
 class loginView: AppCompatActivity() {
+    val db by lazy { UserDB(this) }
 
     private lateinit var inputUsername: TextInputLayout
     private lateinit var inputPassword: TextInputLayout
     private lateinit var mainLayout: ConstraintLayout
+
+    var sharedPreferences: SharedPreferences? = null
 
     var mBundle: Bundle?=null
     var Nama: String = ""
@@ -50,6 +55,8 @@ class loginView: AppCompatActivity() {
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
 
+            val UserDB: User? = db.UserDao().getLogin(inputUsername.editText?.getText().toString(), inputPassword.editText?. getText(). toString())
+
             if(username.isEmpty()){
                 inputUsername.setError("Username must be filled with text")
                 checkLogin = false
@@ -81,6 +88,11 @@ class loginView: AppCompatActivity() {
 
 
             if(!checkLogin)return@OnClickListener
+            sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
+            var editor = sharedPreferences?.edit()
+            editor?.putString("id", UserDB?.id.toString())
+            editor?.commit()
+
             val moveHome = Intent( this@loginView, HomeActivity::class.java)
             startActivity(moveHome)
         })
