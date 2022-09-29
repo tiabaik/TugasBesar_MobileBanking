@@ -2,7 +2,14 @@ package com.tia_0653.mobilebanking
 
 
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
@@ -11,6 +18,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -25,6 +34,11 @@ class RegisterView : AppCompatActivity() {
 
     private lateinit var signUpLayout: ConstraintLayout
 
+    private val CHANNEL_ID_1 = "channel_notification_01"
+
+    private val notificationId1 = 101
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,6 +46,8 @@ class RegisterView : AppCompatActivity() {
         itemBinding = RegisterViewBinding.inflate(layoutInflater)
         val view = itemBinding.root
         setContentView(view)
+
+        createNotificationChannel()
 
         itemBinding.etTTL.setOnClickListener {
             val c = Calendar.getInstance()
@@ -127,8 +143,9 @@ class RegisterView : AppCompatActivity() {
                 bundle.putString("password", Password)
                 bundle.putString("NoHandphone", NoTelp)
                 movetoLogin.putExtra("register", bundle)
-                startActivity(movetoLogin)
 
+                sendNotification(user.UserName, user.Password)
+                startActivity(movetoLogin)
             } else {
                 return@OnClickListener
             }
@@ -142,5 +159,58 @@ class RegisterView : AppCompatActivity() {
         })
 
     }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notification Title"
+            val descriptionText = "Notification Description"
+
+            val channel1 = NotificationChannel(
+                CHANNEL_ID_1,
+                name,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel1)
+        }
+    }
+
+    private fun sendNotification(username: String, password: String) {
+
+        val intent: Intent = Intent(this, RegisterView::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val broadcastIntent: Intent = Intent(this, NotificationReceiver::class.java)
+        broadcastIntent.putExtra("toastMessage", "Register berhasil1!")
+        val actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val gambar = BitmapFactory.decodeResource(resources, R.drawable.mobilebanking)
+        val bigPicture = NotificationCompat.BigPictureStyle()
+            .bigPicture(gambar)
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID_1)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle("hello, $username!")
+            .setContentText("Register berhasil selamat bergabung")
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setColor(Color.BLUE)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(pendingIntent)
+            .addAction(R.mipmap.ic_launcher, "log in", actionIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setStyle(bigPicture)
+
+        with(NotificationManagerCompat.from(this)) {
+            notify(notificationId1, builder.build())
+        }
+    }
+
 
 }

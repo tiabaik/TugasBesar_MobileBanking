@@ -7,4 +7,33 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bs_blue">#0d6efd</color>
+    <color name="bs_indigo">#6610f2</color>
+    <color name="bs_purple">#6f42c1</color>
+    <color name="bs_pink">#d63384</color>
+    <color name="bs_red">#dc3545</color>
+    <color name="bs_orange">#fd7e14</color>
+    <color name="bs_yellow">#ffc107</color>
+    <color name="bs_green">#198754</color>
+    <color name="bs_teal">#20c997</color>
+    <color name="bs_cyan">#0dcaf0</color>
+    <color name="bs_black">#000</color>
+    <color name="bs_white">#fff</color>
+    <color name="bs_gray">#6c757d</color>
+    <color name="bs_bg_color">#fff</color>
+
+    <color name="bg_primary_tint">#F2F3FD</color>
+
+    <color name="bs_blue_700">#0a53be</color>
+    <color name="bs_red_700">#a52834</color>
+
+    <color name="color_primary">@color/bs_blue</color>
+    <color name="color_primary_variant">@color/bs_blue_700</color>
+    <color name="color_on_primary">@color/bs_white</color>
+
+    <color name="color_secondary">@color/bs_red</color>
+    <color name="color_secondary_variant">@color/bs_red_700</color>
+    <color name="color_on_secondary">@color/bs_white</color>
+
 </resources>

@@ -1,9 +1,15 @@
 package com.tia_0653.mobilebanking
 
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,11 +18,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.snackbar.Snackbar
 import com.tia_0653.mobilebanking.room.UserDB
 import com.tia_0653.mobilebanking.databinding.FragmentEditBinding
 import com.tia_0653.mobilebanking.room.User
 import java.util.*
+import com.tia_0653.mobilebanking.EditProfile as EditProfile1
 
 
 class EditProfile : AppCompatActivity() {
@@ -24,9 +33,14 @@ class EditProfile : AppCompatActivity() {
     var itemBinding: FragmentEditBinding? = null
     var sharedPreferences: SharedPreferences? = null
 
+    private val CHANNEL_ID_1 = "channel_notification_01"
+
+    private val notificationId1 = 101
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemBinding = FragmentEditBinding.inflate(layoutInflater)
+        createNotificationChannel()
 
         setContentView(itemBinding?.root)
 
@@ -103,6 +117,7 @@ class EditProfile : AppCompatActivity() {
                     "Your Profile Changed",
                     Toast.LENGTH_SHORT
                 ).show()
+                sendNotification(Name, "")
                 val moveMenu = Intent(this, HomeActivity::class.java)
                 startActivity(moveMenu)
             } else {
@@ -127,6 +142,54 @@ class EditProfile : AppCompatActivity() {
             )
         )
         finish()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notification Title"
+            val descriptionText = "Notification Description"
+
+            val channel1 = NotificationChannel(
+                CHANNEL_ID_1,
+                name,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel1)
+        }
+    }
+
+    private fun sendNotification(username: String, password: String) {
+
+        val intent: Intent = Intent(this, RegisterView::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val broadcastIntent: Intent = Intent(this, NotificationReceiver::class.java)
+        broadcastIntent.putExtra("toastMessage", "Data Berhasil di edit dan diubah!")
+        val actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID_1)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle("hello, $username!")
+            .setContentText("selamat datang")
+            .setStyle(NotificationCompat.BigTextStyle().bigText("Selamat data anda berhasil teredit dan terupdate, sekarang anda dapat mengakese aplikasi ini dengan profil yang terlah berhsail diedit"))
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setColor(Color.BLUE)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+
+        with(NotificationManagerCompat.from(this)) {
+            notify(notificationId1, builder.build())
+        }
     }
 
 }
