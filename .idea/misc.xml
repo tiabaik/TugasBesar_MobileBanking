@@ -4,14 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_bankk_24.xml" value="0.177" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_account_balance_wallet_24.xml" value="0.187" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_alternate_email_24.xml" value="0.187" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_contact_phone_24.xml" value="0.2415" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_baseline_exit_to_app_24.xml" value="0.2415" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/drawable/ic_person_24.xml" value="0.2415" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/activity_home.xml" value="0.25416666666666665" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/activity_splash_screen.xml" value="0.25052083333333336" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/bukti_transaksi.xml" value="0.16709401709401708" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_bukti_transaksi.xml" value="0.536" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_edit.xml" value="0.4" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_nama_bank.xml" value="0.13697916666666668" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/login_view.xml" value="0.23854166666666668" />
         <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/register_view.xml" value="0.264" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/layout/transaksi_view.xml" value="0.253125" />
+        <entry key="..\:/UAJY TIA/Semester 5/Pratikum PBP/UGD/New folder/app/src/main/res/menu/nav_menu.xml" value="0.1" />
         <entry key="..\:/guided/guided_PBP/TugasBesar_MobileBanking/app/src/main/res/layout/activity_home.xml" value="0.253125" />
         <entry key="..\:/guided/guided_PBP/TugasBesar_MobileBanking/app/src/main/res/layout/activity_home2.xml" value="0.253125" />
         <entry key="..\:/guided/guided_PBP/TugasBesar_MobileBanking/app/src/main/res/layout/activity_splash_screen.xml" value="0.22735507246376813" />

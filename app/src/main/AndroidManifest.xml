@@ -30,6 +30,9 @@
         <activity
             android:name=".RegisterView"
             android:exported="false" />
+        <activity
+            android:name=".TransaksiView"
+            android:exported="false"/>
 
         <activity
             android:name=".EditProfile"

@@ -55,6 +55,7 @@ class loginView: AppCompatActivity() {
         val btnLogin: Button = findViewById(R.id.btnLogin)
         val btnRegister: Button = findViewById(R.id.btnRegister)
 
+
         btnClear.setOnClickListener {
             inputUsername.getEditText()?.setText("")
             inputPassword.getEditText()?.setText("")
