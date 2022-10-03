@@ -21,4 +21,7 @@ interface TransaksiDao {
 
     @Query("SELECT * FROM Transaksi WHERE username = :username")
     fun getLogin(username: String): Transaksi?
+
+    @Query("SELECT * FROM Transaksi ORDER BY id desc limit 1 ")
+    fun getTransaksi():Transaksi
 }

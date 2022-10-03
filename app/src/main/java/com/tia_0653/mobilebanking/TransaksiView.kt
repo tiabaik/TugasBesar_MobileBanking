@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -100,13 +101,14 @@ class TransaksiView : AppCompatActivity() {
                 val user = Transaksi(0, Name, TanggalTransaksi, jumlahUang)
                 userDao.addTransaksi(user)
 
-                val movetoHomeActivity= Intent(this, HomeActivity::class.java)
+                val movetoHomeActivity = Intent(this, HomeActivity::class.java)
+                val transaksiDao=db.TransaksiDao().getTransaksi()
                 val bundle: Bundle = Bundle()
+
                 bundle.putString("username", Name)
                 bundle.putString("TanggalTransaksi", TanggalTransaksi)
                 bundle.putString("Jumlah Uang", jumlahUang)
-
-                startActivity(movetoHomeActivity)
+                setCurrentFragment(FragmentBuktiTransaksi(transaksiDao))
             } else {
                 return@OnClickListener
             }
@@ -114,6 +116,14 @@ class TransaksiView : AppCompatActivity() {
 
         })
 
-
     }
+
+        fun setCurrentFragment(fragment: Fragment)=
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentransaksi,fragment)
+                commit()
+            }
+
+
+
 }

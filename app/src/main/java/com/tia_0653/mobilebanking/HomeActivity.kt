@@ -34,10 +34,10 @@ class HomeActivity : AppCompatActivity() {
                     val intent = Intent(this, TransaksiView::class.java)
                     startActivity(intent)
                 }
-                R.id.BuktiTransaksi ->{
-                    loadFragment(FragmentBuktiTransaksi())
-                    return@setOnNavigationItemReselectedListener
-                }
+//                R.id.BuktiTransaksi ->{
+//                    loadFragment(FragmentBuktiTransaksi())
+//                    return@setOnNavigationItemReselectedListener
+//                }
                 R.id.exit -> {
                     val intent = Intent(this, loginView::class.java)
                     startActivity(intent)
