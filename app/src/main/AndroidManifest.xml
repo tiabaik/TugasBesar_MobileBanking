@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.tia_0653.mobilebanking">
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -32,6 +33,14 @@
             android:exported="false" />
         <activity
             android:name=".TransaksiView"
+            android:exported="false"/>
+
+        <activity
+            android:name=".CameraMain"
+            android:exported="false"/>
+
+        <activity
+            android:name=".MapMain"
             android:exported="false"/>
 
         <activity

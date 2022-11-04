@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "geometry": {
+        "location": {
+          "lat": -7.779433,
+          "lng": 110.415782
+        }
+      },
+      "name": "Mobile Banking cab 1",
+      "vicinity": "JL. Babarsari No.43, Janti, Caturtunggal, kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakrata 55281"
+    },
+    {
+        "geometry": {
+          "location": {
+            "lat": -7.776407,
+            "lng": 110.415390
+          }
+        },
+        "name": "Mobile Banking cab 2",
+        "vicinity": "JL. Babarsari No.24, Tambak Bayan, Caturtunggal, kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakrata 55281"
+      }
+
+  ],
+  "status": "OK"
+}
