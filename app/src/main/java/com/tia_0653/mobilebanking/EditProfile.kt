@@ -20,24 +20,37 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.tia_0653.mobilebanking.room.UserDB
 import com.tia_0653.mobilebanking.databinding.FragmentEditBinding
+import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.User
+import kotlinx.android.synthetic.main.fragment_edit.*
+import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 import java.util.*
 import com.tia_0653.mobilebanking.EditProfile as EditProfile1
 
 
 class EditProfile : AppCompatActivity() {
-    val db by lazy {UserDB(this) }
+//    val db by lazy {UserDB(this) }
     var itemBinding: FragmentEditBinding? = null
     var sharedPreferences: SharedPreferences? = null
+    private var queue: RequestQueue? = null
 
     private val CHANNEL_ID_1 = "channel_notification_01"
 
     private val notificationId1 = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        queue = Volley.newRequestQueue(this)
         super.onCreate(savedInstanceState)
         itemBinding = FragmentEditBinding.inflate(layoutInflater)
         createNotificationChannel()
@@ -46,10 +59,8 @@ class EditProfile : AppCompatActivity() {
 
         sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
         val id = sharedPreferences?.getString("id", "")
-        itemBinding?.etName?.setText(db?.UserDao()?.getUser(id!!.toInt())?.UserName)
-        itemBinding?.etEmail?.setText(db?.UserDao()?.getUser(id!!.toInt())?.Email)
-        itemBinding?.etTTL?.setText(db?.UserDao()?.getUser(id!!.toInt())?.TanggalLahir)
-        itemBinding?.etPhoneNumber?.setText(db?.UserDao()?.getUser(id!!.toInt())?.NoHandphone)
+
+        getuserBankById(id!!.toLong())
 
         itemBinding?.etTTL?.setOnClickListener {
             val c = Calendar.getInstance()
@@ -131,16 +142,17 @@ class EditProfile : AppCompatActivity() {
         sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
         val id = sharedPreferences?.getString("id", "")
 
-        db.UserDao().updateUser(
-            User(
-                id!!.toInt(),
-                itemBinding?.etName?.getText().toString(),
-                itemBinding?.etPhoneNumber?.text.toString(),
-                itemBinding?.etEmail?.text.toString(),
-                itemBinding?.etTTL?.text.toString(),
-                db?.UserDao()?.getUser(id!!.toInt())?.Password.toString()
-            )
-        )
+        updateuserBank(id!!.toLong())
+//        db.UserDao().updateUser(
+//            User(
+//                id!!.toInt(),
+//                itemBinding?.etName?.getText().toString(),
+//                itemBinding?.etPhoneNumber?.text.toString(),
+//                itemBinding?.etEmail?.text.toString(),
+//                itemBinding?.etTTL?.text.toString(),
+//                db?.UserDao()?.getUser(id!!.toInt())?.Password.toString()
+//            )
+//        )
         finish()
     }
 
@@ -190,6 +202,139 @@ class EditProfile : AppCompatActivity() {
         with(NotificationManagerCompat.from(this)) {
             notify(notificationId1, builder.build())
         }
+    }
+
+    private fun getuserBankById(id: Long) {
+
+        val stringRequest: StringRequest = object :
+            StringRequest(
+                Method.GET, userBankAPi.GET_BY_ID_URL + id,
+                { response ->
+                    val gson = Gson()
+                    val jsonObject = JSONObject(response)
+                    var userBank : userBank = gson.fromJson(
+                        jsonObject.getJSONObject("data").toString(),
+                        userBank::class.java
+                    )
+
+                    val nameTxt :TextInputLayout= findViewById(R.id.ilName)
+                    val emailTxt :TextInputLayout = findViewById(R.id.ilEmail)
+                    val TTlTxt :TextInputLayout =  findViewById(R.id.ilBirthDate)
+                    val NoTxt :TextInputLayout =  findViewById(R.id.ilPhoneNumber)
+
+
+                    nameTxt.editText?.setText(userBank.username)
+                    emailTxt.editText?.setText(userBank.alamat_email)
+                    TTlTxt.editText?.setText(userBank.tanggal_lahir)
+                    NoTxt.editText?.setText(userBank.nomor_handphone)
+
+                    Toast.makeText(
+                        this,
+                        "Data berhasil diambil",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                },
+                Response.ErrorListener { error ->
+
+                    try {
+                        val responseBody =
+                            String(error.networkResponse.data, StandardCharsets.UTF_8)
+                        val errors = JSONObject(responseBody)
+                        Toast.makeText(
+                            this,
+                            errors.getString("message"),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Accept"] = "application/json"
+                return headers
+            }
+        }
+        queue!!.add(stringRequest)
+
+    }
+
+    private fun updateuserBank(id: Long) {
+        val nameTxt :TextInputLayout= findViewById(R.id.ilName)
+        val emailTxt :TextInputLayout = findViewById(R.id.ilEmail)
+        val TTlTxt :TextInputLayout =  findViewById(R.id.ilBirthDate)
+        val NoTxt :TextInputLayout =  findViewById(R.id.ilPhoneNumber)
+
+        val userBank = userBank(
+            id= null,
+            username = nameTxt.editText?.text.toString(),
+            alamat_email = emailTxt.editText?.text.toString(),
+            tanggal_lahir = TTlTxt.editText?.text.toString(),
+            nomor_handphone = NoTxt.editText?.text.toString(),
+            password = null,
+            konfirmasi_password = null
+        )
+        val stringRequest: StringRequest =
+            object : StringRequest(
+                Method.PUT,
+                userBankAPi.UPDATE_URL + id,
+                Response.Listener { response ->
+                    val gson = Gson()
+                    val jsonObject = JSONObject(response)
+                    var userBank : userBank = gson.fromJson(
+                        jsonObject.getJSONObject("data").toString(),
+                        com.tia_0653.mobilebanking.models.userBank::class.java
+                    )
+
+                    if (userBank != null)
+                        Toast.makeText(
+                            this@EditProfile,
+                            "Data berhasil diubah",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+//                    val returnIntent = Intent()
+//                    setResult(RESULT_OK, returnIntent)
+                    finish()
+
+
+                },
+                Response.ErrorListener { error ->
+
+                    try {
+                        val responseBody =
+                            String(error.networkResponse.data, StandardCharsets.UTF_8)
+                        val errors = JSONObject(responseBody)
+                        Toast.makeText(
+                            this,
+                            errors.getString("message"),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@EditProfile, e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Accept"] = "application/json"
+                    return headers
+                }
+
+                @Throws(AuthFailureError::class)
+                override fun getBody(): ByteArray {
+                    val gson = Gson()
+                    val requestBody = gson.toJson(userBank)
+                    return requestBody.toByteArray(StandardCharsets.UTF_8)
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json"
+                }
+            }
+        queue!!.add(stringRequest)
     }
 
 }

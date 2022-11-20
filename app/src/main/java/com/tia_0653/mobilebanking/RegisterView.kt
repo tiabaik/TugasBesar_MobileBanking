@@ -13,19 +13,30 @@ import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.tia_0653.mobilebanking.databinding.RegisterViewBinding
+import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.User
 import com.tia_0653.mobilebanking.room.UserDB
+import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.xml.datatype.DatatypeConstants.MONTHS
 
@@ -38,6 +49,8 @@ class RegisterView : AppCompatActivity() {
 
     private val notificationId1 = 101
 
+    private var queue: RequestQueue? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +61,8 @@ class RegisterView : AppCompatActivity() {
         setContentView(view)
 
         createNotificationChannel()
+
+        queue = Volley.newRequestQueue(this)
 
         itemBinding.etTTL.setOnClickListener {
             val c = Calendar.getInstance()
@@ -129,11 +144,14 @@ class RegisterView : AppCompatActivity() {
 
             if (checkSignUp == true) {
                 // simpan data ke database
-                val db by lazy { UserDB(this) }
-                val userDao = db.UserDao()
+//                val db by lazy { UserDB(this) }
+//                val userDao = db.UserDao()
 
-                val user = User(0, Name, Email, Password, TanggalLahir, NoTelp)
-                userDao.addUser(user)
+//                val user = User(0, Name, Email, Password, TanggalLahir, NoTelp)
+//                userDao.addUser(user)
+
+                // cek register
+                cekRegister()
 
                 val movetoLogin = Intent(this, loginView::class.java)
                 val bundle: Bundle = Bundle()
@@ -144,7 +162,7 @@ class RegisterView : AppCompatActivity() {
                 bundle.putString("NoHandphone", NoTelp)
                 movetoLogin.putExtra("register", bundle)
 
-                sendNotification(user.UserName, user.Password)
+//                sendNotification(user.UserName, user.Password)
                 startActivity(movetoLogin)
             } else {
                 return@OnClickListener
@@ -212,5 +230,69 @@ class RegisterView : AppCompatActivity() {
         }
     }
 
+    fun cekRegister() {
+        val userBank = userBank(
+            username = itemBinding.tilUserName.editText?.text.toString(),
+            alamat_email = itemBinding.tilEmail.editText?.text.toString(),
+            password = itemBinding.tilRegisPassword.editText?.text.toString(),
+            konfirmasi_password = itemBinding.tilRegisPasswordConfirm.editText?.text.toString(),
+            tanggal_lahir = itemBinding.etTTL.text.toString(),
+            nomor_handphone = itemBinding.tilNomorhp.editText?.text.toString(),
+            id = null
+        )
+        val stringRequest: StringRequest =
+            object :
+                StringRequest(Method.POST, userBankAPi.ADD_URL, Response.Listener { response ->
+                    val gson = Gson()
+                    var userBank = gson.fromJson(response, userBank::class.java)
 
+                    if (userBank != null)
+                        Toast.makeText(
+                            this@RegisterView,
+                            "Data berhasil ditambahkan",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+
+                    val returnIntent = Intent()
+                    setResult(RESULT_OK, returnIntent)
+                    finish()
+
+
+                }, Response.ErrorListener { error ->
+
+                    try {
+                        val responseBody =
+                            String(error.networkResponse.data, StandardCharsets.UTF_8)
+                        val errors = JSONObject(responseBody)
+                        Toast.makeText(
+                            this,
+                            errors.getString("message"),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@RegisterView, e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Accept"] = "application/json"
+                    return headers
+                }
+
+                @Throws(AuthFailureError::class)
+                override fun getBody(): ByteArray {
+                    val gson = Gson()
+                    val requestBody = gson.toJson(userBank)
+                    return requestBody.toByteArray(StandardCharsets.UTF_8)
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json"
+                }
+            }
+
+        queue!!.add(stringRequest)
+    }
 }

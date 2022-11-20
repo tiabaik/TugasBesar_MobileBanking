@@ -14,13 +14,23 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.User
 import com.tia_0653.mobilebanking.room.UserDB
+import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 
 
 class loginView: AppCompatActivity() {
@@ -33,6 +43,8 @@ class loginView: AppCompatActivity() {
 
     private val notificationId1 = 101
 
+    private var queue: RequestQueue? = null
+
 
     var sharedPreferences: SharedPreferences? = null
 
@@ -44,6 +56,7 @@ class loginView: AppCompatActivity() {
     var Password: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        queue = Volley.newRequestQueue(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_view)
         createNotificationChannel()
@@ -64,11 +77,11 @@ class loginView: AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener(View.OnClickListener {
-            var checkLogin = false
+            var checkLogin = true
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
 
-            val UserDB: User? = db.UserDao().getLogin(inputUsername.editText?.getText().toString(), inputPassword.editText?. getText(). toString())
+//            val UserDB: User? = db.UserDao().getLogin(inputUsername.editText?.getText().toString(), inputPassword.editText?. getText(). toString())
 
             if(username.isEmpty()){
                 inputUsername.setError("Username must be filled with text")
@@ -80,8 +93,8 @@ class loginView: AppCompatActivity() {
                 checkLogin = false
             }
 
-            val db by lazy { UserDB(this) }
-            val userDao = db.UserDao()
+//            val db by lazy { UserDB(this) }
+//            val userDao = db.UserDao()
 
 
 //            if(username == "admin" && password == "0653") checkLogin = true
@@ -91,23 +104,17 @@ class loginView: AppCompatActivity() {
 //                checkLogin = false
 //                Snackbar.make(mainLayout, "register first", Snackbar.LENGTH_LONG).show()
 //            }else
-            val user: User? = userDao.getLogin(username, password)
-            if (user != null) {
-                checkLogin = true
-            }else{
-                checkLogin = false
-                Snackbar.make(mainLayout, "Periksa kembali username dan password", Snackbar.LENGTH_LONG).show()
-            }
+//            val user: User? = userDao.getLogin(username, password)
+//            if (user != null) {
+//                checkLogin = true
+//            }else{
+//                checkLogin = false
+//                Snackbar.make(mainLayout, "Periksa kembali username dan password", Snackbar.LENGTH_LONG).show()
+//            }
 
 
             if(!checkLogin)return@OnClickListener
-            sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
-            var editor = sharedPreferences?.edit()
-            editor?.putString("id", UserDB?.id.toString())
-            editor?.commit()
-            sendNotification(username,"")
-            val moveHome = Intent( this@loginView, HomeActivity::class.java)
-            startActivity(moveHome)
+            cekLoginweb()
         })
 
         btnRegister.setOnClickListener{
@@ -178,5 +185,51 @@ class loginView: AppCompatActivity() {
         with(NotificationManagerCompat.from(this)) {
             notify(notificationId1, builder.build())
         }
+    }
+
+    private fun cekLoginweb(){
+        val stringRequest : StringRequest = object: StringRequest(Method.GET, userBankAPi.GET_ALL_URL, Response.Listener { response ->
+            val gson = Gson()
+            val jsonObject = JSONObject(response)
+            var userBank : Array<userBank> = gson.fromJson(
+                jsonObject.getJSONArray("data").toString(),
+                Array<userBank>::class.java
+            )
+
+            val username: String = inputUsername.getEditText()?.getText().toString()
+            val password: String = inputPassword.getEditText()?.getText().toString()
+            for(user in userBank) {
+                if(user.username == username && user.password == password) {
+                    sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
+                    var editor = sharedPreferences?.edit()
+                    editor?.putString("id", user.id.toString())
+                    editor?.apply()
+                    sendNotification(username,"")
+                    val moveHome = Intent( this@loginView, HomeActivity::class.java)
+                    startActivity(moveHome)
+                    finish()
+                    break;
+                }
+            }
+            Snackbar.make(mainLayout, "Periksa kembali username dan password", Snackbar.LENGTH_LONG).show()
+        }, Response.ErrorListener { error ->
+            try {
+                val responseBody =
+                    String(error.networkResponse.data, StandardCharsets.UTF_8)
+                val errors = JSONObject(responseBody)
+                Toast.makeText(this@loginView, errors.getString("message"), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception){
+                Toast.makeText(this@loginView, e.message, Toast.LENGTH_SHORT).show()
+            }
+        }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Accept"] = "application/json"
+                return headers
+            }
+
+        }
+        queue!!.add(stringRequest)
     }
 }

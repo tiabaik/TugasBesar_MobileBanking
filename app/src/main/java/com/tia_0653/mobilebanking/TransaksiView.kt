@@ -1,129 +1,146 @@
 package com.tia_0653.mobilebanking
 
-import android.app.DatePickerDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.view.WindowManager
+import android.widget.LinearLayout
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.Fragment
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
-import com.tia_0653.mobilebanking.databinding.TransaksiViewBinding
-import com.tia_0653.mobilebanking.room.Transaksi
-import com.tia_0653.mobilebanking.room.User
-import com.tia_0653.mobilebanking.room.UserDB
-import java.util.*
-import javax.xml.datatype.DatatypeConstants.MONTHS
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.tia_0653.mobilebanking.*
+import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 
 class TransaksiView : AppCompatActivity() {
-    private lateinit var itemBinding: TransaksiViewBinding
+    private var srtransaksiBank: SwipeRefreshLayout? = null
+    private var adapter: TransaksiAdapter? = null
+    private var svtransaksiBank: SearchView? = null
 
-    private lateinit var signUpLayout: ConstraintLayout
+    private var queue: RequestQueue? = null
 
-
+    companion object{
+        const val LAUNCH_ADD_ACTIVITY = 123
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.transaksi_view)
+
+        queue = Volley.newRequestQueue(this)
+
+        srtransaksiBank = findViewById(R.id.sr_transaksiBank)
 
 
-        itemBinding = TransaksiViewBinding.inflate(layoutInflater)
-        val view = itemBinding.root
-        setContentView(view)
+        srtransaksiBank?.setOnRefreshListener (SwipeRefreshLayout.OnRefreshListener { allMahasiswa() })
 
 
-        itemBinding.etTanggalTransaksi.setOnClickListener {
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-            val dpd = DatePickerDialog(
-                this,
-                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-
-                    // Display Selected date in textbox
-                    itemBinding.etTanggalTransaksi.setText("" + dayOfMonth + "/" + monthOfYear + "/" + year)
-
-                }, year, month, day
-            )
-
-            dpd.show()
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fab_add)
+        fabAdd.setOnClickListener {
+            val i = Intent(this@TransaksiView,  BuktiTransaksi::class.java)
+            startActivityForResult(i, LAUNCH_ADD_ACTIVITY)
         }
 
-        itemBinding.btnTransaksi.setOnClickListener(View.OnClickListener {
-
-            val intent = Intent(this, FragmentBuktiTransaksi::class.java)
-
-            val Name: String = itemBinding.tilUserName.editText?.getText().toString()
-            val TanggalTransaksi: String = itemBinding.etTanggalTransaksi.getText().toString()
-            val jumlahUang: String = itemBinding.tiljumlahUang.editText?.getText().toString()
-
-
-            var checkSignUp = true
-
-            if (Name.isEmpty()) {
-                itemBinding.tilUserName.setError("Name must be filled with text")
-                checkSignUp = false
-            }
-
-
-            if (TanggalTransaksi.isEmpty()) {
-                itemBinding.etTanggalTransaksi.setError("Tanggal Transaksi must be filled with text")
-                checkSignUp = false
-            }
-
-
-            if (jumlahUang.isEmpty()) {
-                itemBinding.tiljumlahUang.setError("Phone Number must be filled with text")
-                checkSignUp = false
-            }
-
-
-            if (checkSignUp == true) {
-                // simpan data ke database
-                val db by lazy { UserDB(this) }
-                val userDao = db.TransaksiDao()
-
-                val user = Transaksi(0, Name, TanggalTransaksi, jumlahUang)
-                userDao.addTransaksi(user)
-
-                val movetoHomeActivity = Intent(this, HomeActivity::class.java)
-                val transaksiDao=db.TransaksiDao().getTransaksi()
-                val bundle: Bundle = Bundle()
-
-                bundle.putString("username", Name)
-                bundle.putString("TanggalTransaksi", TanggalTransaksi)
-                bundle.putString("Jumlah Uang", jumlahUang)
-                setCurrentFragment(FragmentBuktiTransaksi(transaksiDao))
-            } else {
-                return@OnClickListener
-            }
-
-
-        })
-
+        val rvProduk = findViewById<RecyclerView>(R.id.rv_transaksiBank)
+        adapter = TransaksiAdapter(ArrayList(), this)
+        rvProduk.layoutManager = LinearLayoutManager(this)
+        rvProduk.adapter = adapter
+        allMahasiswa()
     }
 
-        fun setCurrentFragment(fragment: Fragment)=
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.fragmentransaksi,fragment)
-                commit()
+    private fun allMahasiswa(){
+        srtransaksiBank!!.isRefreshing = true
+        val stringRequest : StringRequest = object: StringRequest(Method.GET, transaksiBankApi.GET_ALL_URL,
+            Response.Listener { response ->
+            val gson = Gson()
+                val jsonObject = JSONObject(response)
+
+            var transaksi : Array<transaksiBank> = gson.fromJson(
+                jsonObject.getJSONArray("data").toString(),
+                Array<transaksiBank>::class.java
+            )
+
+
+            adapter!!.setTransaksiList(transaksi)
+
+            srtransaksiBank!!.isRefreshing = false
+
+            if(!transaksi.isEmpty())
+                Toast.makeText(this@TransaksiView, "Data berhasil diambil", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this@TransaksiView, "Data Kosong!", Toast.LENGTH_SHORT).show()
+
+        }, Response.ErrorListener { error ->
+            srtransaksiBank!!.isRefreshing = false
+            try {
+                val responseBody =
+                    String(error.networkResponse.data, StandardCharsets.UTF_8)
+                val errors = JSONObject(responseBody)
+                Toast.makeText(this@TransaksiView, errors.getString("message"), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception){
+                Toast.makeText(this@TransaksiView, e.message, Toast.LENGTH_SHORT).show()
+            }
+        }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Accept"] = "application/json"
+                return headers
             }
 
+        }
+        queue!!.add(stringRequest)
+    }
 
+    public fun deleteTransaksi(id: Long){
+
+        val stringRequest: StringRequest = object :
+            StringRequest(Method.DELETE, transaksiBankApi.DELETE_URL+id, Response.Listener { response ->
+
+
+                val gson = Gson()
+                var mahasiswa = gson.fromJson(response, transaksiBank::class.java)
+                if(mahasiswa != null)
+                    Toast.makeText(this@TransaksiView, "Data Berhasil Dihapus", Toast.LENGTH_SHORT).show()
+
+                allMahasiswa()
+            }, Response.ErrorListener { error ->
+
+                try {
+                    val responseBody = String(error.networkResponse.data, StandardCharsets.UTF_8)
+                    val errors = JSONObject(responseBody)
+                    Toast.makeText(this@TransaksiView, errors.getString("message"), Toast.LENGTH_SHORT).show()
+                } catch (e: java.lang.Exception){
+                    Toast.makeText(this@TransaksiView, e.message, Toast.LENGTH_SHORT).show()
+                }
+            }){
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers = java.util.HashMap<String, String>()
+                headers["Accept"] = "application/json"
+                return headers
+            }
+        }
+        queue!!.add(stringRequest)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == LAUNCH_ADD_ACTIVITY){
+            if(resultCode == Activity.RESULT_OK){
+                allMahasiswa()
+            }
+        }
+    }
 
 }
