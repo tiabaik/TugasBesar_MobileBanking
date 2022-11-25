@@ -31,6 +31,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.shashank.sony.fancytoastlib.FancyToast
 import com.tia_0653.mobilebanking.databinding.RegisterViewBinding
 import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.User
@@ -247,11 +248,12 @@ class RegisterView : AppCompatActivity() {
                     var userBank = gson.fromJson(response, userBank::class.java)
 
                     if (userBank != null)
-                        Toast.makeText(
-                            this@RegisterView,
-                            "Data berhasil ditambahkan",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    FancyToast.makeText(
+                        this@RegisterView,
+                        "Data berhasil Diubah",
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.SUCCESS,true
+                    ).show()
 
 
                     val returnIntent = Intent()

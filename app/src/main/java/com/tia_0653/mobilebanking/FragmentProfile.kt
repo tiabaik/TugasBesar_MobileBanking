@@ -17,6 +17,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.shashank.sony.fancytoastlib.FancyToast
 import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.UserDB
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -89,11 +90,13 @@ class FragmentProfile : Fragment() {
                     TTlTxt.setText(userBank.tanggal_lahir)
                     NoTxt.setText(userBank.nomor_handphone)
 
-                    Toast.makeText(
+                    FancyToast.makeText(
                         requireActivity(),
                         "Data berhasil diambil",
-                        Toast.LENGTH_SHORT
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.INFO,true
                     ).show()
+
 
                 },
                 Response.ErrorListener { error ->

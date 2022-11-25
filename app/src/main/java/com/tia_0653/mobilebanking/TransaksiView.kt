@@ -132,6 +132,8 @@ class TransaksiView : AppCompatActivity() {
             }
         }
         queue!!.add(stringRequest)
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -142,5 +144,6 @@ class TransaksiView : AppCompatActivity() {
             }
         }
     }
+
 
 }

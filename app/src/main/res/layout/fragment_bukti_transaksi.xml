@@ -39,7 +39,7 @@
                 android:layout_marginTop="8dp"
                 android:hint="Nama Bank" >
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/et_namaBank"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:layout_marginTop="8dp"
                 android:hint="Kode Bank" >
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/et_kode_bank"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
-                android:hint="Kode Bank" >
+                android:hint="Jumlah Uang" >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_jumlah_uang"

@@ -1,25 +1,45 @@
 package com.tia_0653.mobilebanking
 
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
+import android.os.Environment
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.android.volley.AuthFailureError
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
-import com.tia_0653.mobilebanking.room.Transaksi
+import com.shashank.sony.fancytoastlib.FancyToast
+import com.tia_0653.mobilebanking.databinding.FragmentBuktiTransaksiBinding
 import kotlinx.android.synthetic.main.fragment_bukti_transaksi.*
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
 
 class BuktiTransaksi : AppCompatActivity() {
+
     companion object {
-        private val KodeBank_LIST = arrayOf("014", "008", "002", "022", "011", "426", "019", "123", "125", "117")
+        private val KodeBank_LIST =
+            arrayOf("014", "008", "002", "022", "011", "426", "019", "123", "125", "117")
         private val NamaBank_LIST = arrayOf(
             "BCA",
             "Mandiri",
@@ -29,7 +49,7 @@ class BuktiTransaksi : AppCompatActivity() {
             "Panin",
             "Kalbar",
             "kalteng",
-             "sumut",
+            "sumut",
         )
 
     }
@@ -43,15 +63,13 @@ class BuktiTransaksi : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_bukti_transaksi)
 
+        setContentView(R.layout.fragment_bukti_transaksi)
         queue = Volley.newRequestQueue(this)
         edNamabank = findViewById(R.id.et_namaBank)
         etTanggaltransaksi = findViewById(R.id.et_tanggal_transaksi)
-        edkodeBank= findViewById(R.id.et_kode_bank)
+        edkodeBank = findViewById(R.id.et_kode_bank)
         etjumlahUang = findViewById(R.id.et_jumlah_uang)
-
-
         setExposedDropdownMenu()
 
         val btnCancel = findViewById<Button>(R.id.btn_cancel)
@@ -68,6 +86,8 @@ class BuktiTransaksi : AppCompatActivity() {
 
             btnSave.setOnClickListener { updateTransaksi(id) }
         }
+
+
     }
 
     fun setExposedDropdownMenu() {
@@ -145,10 +165,11 @@ class BuktiTransaksi : AppCompatActivity() {
                     var mahasiswa = gson.fromJson(response, transaksi::class.java)
 
                     if (mahasiswa != null)
-                        Toast.makeText(
-                            this@BuktiTransaksi,
-                            "Data berhasil ditambahkan",
-                            Toast.LENGTH_SHORT
+                        FancyToast.makeText(
+                            this,
+                            "Data berhasil Ditambah",
+                            FancyToast.LENGTH_SHORT,
+                            FancyToast.SUCCESS,true
                         ).show()
 
 
@@ -213,11 +234,13 @@ class BuktiTransaksi : AppCompatActivity() {
                     var mahasiswa = gson.fromJson(response, transaksi::class.java)
 
                     if (mahasiswa != null)
-                        Toast.makeText(
+                        FancyToast.makeText(
                             this@BuktiTransaksi,
-                            "Data berhasil diubah",
-                            Toast.LENGTH_SHORT
+                            "Data berhasil Diubah",
+                            FancyToast.LENGTH_SHORT,
+                            FancyToast.SUCCESS,true
                         ).show()
+
 
                     val returnIntent = Intent()
                     setResult(RESULT_OK, returnIntent)
@@ -260,6 +283,6 @@ class BuktiTransaksi : AppCompatActivity() {
             }
         queue!!.add(stringRequest)
     }
-
-
 }
+
+

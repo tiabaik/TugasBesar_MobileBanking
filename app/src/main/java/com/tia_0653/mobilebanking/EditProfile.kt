@@ -28,6 +28,7 @@ import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.shashank.sony.fancytoastlib.FancyToast
 import com.tia_0653.mobilebanking.room.UserDB
 import com.tia_0653.mobilebanking.databinding.FragmentEditBinding
 import com.tia_0653.mobilebanking.models.userBank
@@ -228,10 +229,11 @@ class EditProfile : AppCompatActivity() {
                     TTlTxt.editText?.setText(userBank.tanggal_lahir)
                     NoTxt.editText?.setText(userBank.nomor_handphone)
 
-                    Toast.makeText(
+                    FancyToast.makeText(
                         this,
                         "Data berhasil diambil",
-                        Toast.LENGTH_SHORT
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.INFO,true
                     ).show()
 
                 },
@@ -289,11 +291,13 @@ class EditProfile : AppCompatActivity() {
                     )
 
                     if (userBank != null)
-                        Toast.makeText(
+                        FancyToast.makeText(
                             this@EditProfile,
                             "Data berhasil diubah",
-                            Toast.LENGTH_SHORT
+                            FancyToast.LENGTH_SHORT,
+                            FancyToast.SUCCESS, true
                         ).show()
+
 
 //                    val returnIntent = Intent()
 //                    setResult(RESULT_OK, returnIntent)

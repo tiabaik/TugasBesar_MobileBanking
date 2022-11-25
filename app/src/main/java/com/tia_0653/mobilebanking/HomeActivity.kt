@@ -1,53 +1,91 @@
 package com.tia_0653.mobilebanking
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.lang.Exception
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.FormatStrategy
+import com.orhanobut.logger.Logger
+import com.orhanobut.logger.PrettyFormatStrategy
+import dev.shreyaspatil.MaterialDialog.MaterialDialog
+import timber.log.Timber
 
 class HomeActivity : AppCompatActivity() {
 
     lateinit var bottomNav : BottomNavigationView
+    private lateinit var mAnimatedDialog: MaterialDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         loadFragment(Fragment_nama_bank())
         bottomNav = findViewById(R.id.bottomNav) as BottomNavigationView
-        bottomNav.setOnNavigationItemReselectedListener {
-            when (it.itemId) {
-                R.id.namaBank-> {
-                    loadFragment(Fragment_nama_bank())
-                    return@setOnNavigationItemReselectedListener
-                }
-                R.id.profile -> {
-                    loadFragment(FragmentProfile())
-                    return@setOnNavigationItemReselectedListener
-                }
-                R.id.Transaksi ->{
-                    val intent = Intent(this, TransaksiView::class.java)
-                    startActivity(intent)
-                }
 
-//                R.id.BuktiTransaksi ->{
-//                    loadFragment(FragmentBuktiTransaksi())
+
+        mAnimatedDialog = MaterialDialog.Builder(this)
+            .setTitle("Exit")
+            .setMessage("Apakah anda yakin ingin keluar dari aplikasi ini?")
+            .setCancelable(false)
+            .setPositiveButton(
+                "Exit", R.drawable.ic_baseline_exit_to_app_24
+            ) { dialogInterface, i ->
+                val intent = Intent(this,loginView::class.java)
+                startActivity(intent)
+                dialogInterface.dismiss()
+            }
+            .setNegativeButton(
+                "Cancel", R.drawable.ic_baseline_close
+            ) { dialogInterface, which ->
+                Toast.makeText(applicationContext, "Cancelled!", Toast.LENGTH_SHORT)
+                    .show()
+                dialogInterface.dismiss()
+            }
+            .setAnimation("delete_anim.json")
+            .build()
+
+
+        bottomNav.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+//                R.id.namaBank-> {
+//                    loadFragment(Fragment_nama_bank())
 //                    return@setOnNavigationItemReselectedListener
 //                }
 
-                R.id.Map ->{
-                    val intent = Intent(this, MapMain::class.java)
+                R.id.profile -> {
+                    loadFragment(FragmentProfile())
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.Transaksi ->{
+                    val intent = Intent(this,TransaksiView::class.java)
                     startActivity(intent)
+                    return@setOnNavigationItemSelectedListener true
+                }
+
+                R.id.Qrcode->{
+                    val intent = Intent(this,QRcode::class.java)
+                    startActivity(intent)
+                    return@setOnNavigationItemSelectedListener true
+                }
+
+
+                R.id.Map ->{
+                    val intent = Intent(this,MapMain::class.java)
+                    startActivity(intent)
+                    return@setOnNavigationItemSelectedListener true
                 }
 
                 R.id.exit -> {
-                    val intent = Intent(this, loginView::class.java)
-                    startActivity(intent)
+
+
+                    mAnimatedDialog.show()
+
+                    return@setOnNavigationItemSelectedListener true
+                }
+                else -> {
+                    return@setOnNavigationItemSelectedListener false
                 }
             }
         }

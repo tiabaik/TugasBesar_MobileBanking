@@ -25,4 +25,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/nav_menu"
         android:scrollIndicators="left"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

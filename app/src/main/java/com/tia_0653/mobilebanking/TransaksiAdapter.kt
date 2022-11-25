@@ -1,25 +1,24 @@
 package com.tia_0653.mobilebanking
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dev.shreyaspatil.MaterialDialog.MaterialDialog
 import java.util.*
-import kotlin.collections.ArrayList
 
 class TransaksiAdapter(private var transaksiList: List<transaksiBank>, context: Context):
     RecyclerView.Adapter<TransaksiAdapter.ViewHolder>(), Filterable {
 
     private var filteredTransaksiList: MutableList<transaksiBank>
     private val context: Context
+
 
     init {
         filteredTransaksiList = ArrayList(transaksiList)
@@ -39,9 +38,12 @@ class TransaksiAdapter(private var transaksiList: List<transaksiBank>, context: 
     fun setTransaksiList(transaksiList: Array<transaksiBank>){
         this.transaksiList = transaksiList.toList()
         filteredTransaksiList = transaksiList.toMutableList()
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+
         val transaksiBank = filteredTransaksiList[position]
         holder.tvNama.text = transaksiBank.username
         holder.tvTanggalTransaksi.text = transaksiBank.tanggal_transaksi

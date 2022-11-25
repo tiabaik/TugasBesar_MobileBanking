@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/namaBank"
-        android:title="Nama Bank"
-        android:icon="@drawable/ic_bankk_24" />
+<!--    <item-->
+<!--        android:id="@+id/namaBank"-->
+<!--        android:title="Nama Bank"-->
+<!--        android:icon="@drawable/ic_bankk_24" />-->
     <item
         android:id="@+id/profile"
         android:title="Profile"
@@ -13,10 +13,12 @@
         android:id="@+id/Transaksi"
         android:title="Transaksi"
         android:icon="@drawable/ic_baseline_account_balance_wallet_24"/>
-<!--    <item-->
-<!--        android:id="@+id/BuktiTransaksi"-->
-<!--        android:title="Bukti Transaksi"-->
-<!--        android:icon="@drawable/ic_baseline_account_balance_wallet_24"/>-->
+
+    <item
+        android:id="@+id/Qrcode"
+        android:title="Qrcode"
+        android:icon="@drawable/ic_baseline_qr_code_24"/>
+
 
     <item
         android:id="@+id/Map"

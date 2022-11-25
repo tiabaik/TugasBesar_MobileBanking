@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.View
+import android.webkit.WebSettings.RenderPriority
 import android.widget.Button
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -26,11 +27,19 @@ import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.FormatStrategy
+import com.orhanobut.logger.Logger
+import com.orhanobut.logger.Logger.addLogAdapter
+import com.orhanobut.logger.Logger.log
+import com.orhanobut.logger.PrettyFormatStrategy
 import com.tia_0653.mobilebanking.models.userBank
 import com.tia_0653.mobilebanking.room.User
 import com.tia_0653.mobilebanking.room.UserDB
 import org.json.JSONObject
+import timber.log.Timber
 import java.nio.charset.StandardCharsets
+
 
 
 class loginView: AppCompatActivity() {
@@ -67,6 +76,22 @@ class loginView: AppCompatActivity() {
         val btnClear: Button = findViewById(R.id.btnClear)
         val btnLogin: Button = findViewById(R.id.btnLogin)
         val btnRegister: Button = findViewById(R.id.btnRegister)
+
+        val formatStrategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
+            .showThreadInfo(true)
+            .methodCount(1)
+            .methodOffset(5)
+            .build()
+        Logger.addLogAdapter(AndroidLogAdapter(formatStrategy))
+
+        Timber.plant(object : Timber.DebugTree(){
+            override fun log(priority: Int, tag: String?, message: String, t: Throwable?){
+                Logger.log(priority,"-$tag", message, t)
+            }
+        })
+
+        Timber.d("onCreate Inside LoginView")
+
 
 
         btnClear.setOnClickListener {
