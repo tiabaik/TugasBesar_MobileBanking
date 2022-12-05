@@ -138,7 +138,7 @@ class loginView: AppCompatActivity() {
 //            }
 
 
-            if(!checkLogin)return@OnClickListener
+//            if(!checkLogin)return@OnClickListener
             cekLoginweb()
         })
 
@@ -213,35 +213,27 @@ class loginView: AppCompatActivity() {
     }
 
     private fun cekLoginweb(){
-        val stringRequest : StringRequest = object: StringRequest(Method.GET, userBankAPi.GET_ALL_URL, Response.Listener { response ->
-            val gson = Gson()
+        val username:TextInputLayout = findViewById(R.id.inputLayoutUsername)
+        val password:TextInputLayout = findViewById(R.id.inputLayoutPassword)
+        val stringRequest : StringRequest = object: StringRequest(Method.POST, userBankAPi.login_url, Response.Listener { response ->
             val jsonObject = JSONObject(response)
-            var userBank : Array<userBank> = gson.fromJson(
-                jsonObject.getJSONArray("data").toString(),
-                Array<userBank>::class.java
-            )
-
-            val username: String = inputUsername.getEditText()?.getText().toString()
-            val password: String = inputPassword.getEditText()?.getText().toString()
-            for(user in userBank) {
-                if(user.username == username && user.password == password) {
+            val id = jsonObject.getJSONObject("user").getString("id")
+            val username = jsonObject.getJSONObject("user").getString("username")
                     sharedPreferences = this.getSharedPreferences("userlog", Context.MODE_PRIVATE)
                     var editor = sharedPreferences?.edit()
-                    editor?.putString("id", user.id.toString())
+                    editor?.putString("id", id)
                     editor?.apply()
                     sendNotification(username,"")
                     val moveHome = Intent( this@loginView, HomeActivity::class.java)
                     startActivity(moveHome)
                     finish()
-                    break;
-                }
-            }
-            Snackbar.make(mainLayout, "Periksa kembali username dan password", Snackbar.LENGTH_LONG).show()
+
         }, Response.ErrorListener { error ->
             try {
                 val responseBody =
                     String(error.networkResponse.data, StandardCharsets.UTF_8)
                 val errors = JSONObject(responseBody)
+                println(errors.toString())
                 Toast.makeText(this@loginView, errors.getString("message"), Toast.LENGTH_SHORT).show()
             } catch (e: Exception){
                 Toast.makeText(this@loginView, e.message, Toast.LENGTH_SHORT).show()
@@ -252,6 +244,13 @@ class loginView: AppCompatActivity() {
                 val headers = HashMap<String, String>()
                 headers["Accept"] = "application/json"
                 return headers
+            }
+
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["username"] = username.editText?.text.toString()
+                params["password"] = password.editText?.text.toString()
+                return params
             }
 
         }

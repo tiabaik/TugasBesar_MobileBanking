@@ -142,6 +142,7 @@ class RegisterView : AppCompatActivity() {
                 checkSignUp = false
             }
 
+            cekRegister()
 
             if (checkSignUp == true) {
                 // simpan data ke database
@@ -152,7 +153,7 @@ class RegisterView : AppCompatActivity() {
 //                userDao.addUser(user)
 
                 // cek register
-                cekRegister()
+
 
                 val movetoLogin = Intent(this, loginView::class.java)
                 val bundle: Bundle = Bundle()
