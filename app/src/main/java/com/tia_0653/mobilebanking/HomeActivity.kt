@@ -71,8 +71,8 @@ class HomeActivity : AppCompatActivity() {
                 }
 
 
-                R.id.Map ->{
-                    val intent = Intent(this,MapMain::class.java)
+                R.id.Pembayaran->{
+                    val intent = Intent(this,PembayaranView::class.java)
                     startActivity(intent)
                     return@setOnNavigationItemSelectedListener true
                 }

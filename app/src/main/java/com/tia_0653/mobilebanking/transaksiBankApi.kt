@@ -2,7 +2,7 @@ package com.tia_0653.mobilebanking
 
 class transaksiBankApi {
     companion object{
-        val  BASE_URl = "http://192.168.2.93:8081/TUBES_API/public/api/"
+        val  BASE_URl = "http://henryyg.com/mobilebanking/public/api/"
 
         val GET_ALL_URL = BASE_URl+ "transaksis/"
         val GET_BY_ID_URL = BASE_URl+"transaksis/"

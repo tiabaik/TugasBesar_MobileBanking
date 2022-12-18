@@ -3,10 +3,6 @@ package com.tia_0653.mobilebanking
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,13 +16,12 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
-import com.tia_0653.mobilebanking.*
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
 
-class TransaksiView : AppCompatActivity() {
-    private var srtransaksiBank: SwipeRefreshLayout? = null
-    private var adapter: TransaksiAdapter? = null
+class PembayaranView : AppCompatActivity() {
+    private var srpembayaran: SwipeRefreshLayout? = null
+    private var adapter: PembayaranAdapter? = null
     private var svtransaksiBank: SearchView? = null
 
     private var queue: RequestQueue? = null
@@ -36,64 +31,64 @@ class TransaksiView : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.transaksi_view)
+        setContentView(R.layout.pembayaran_view)
 
         queue = Volley.newRequestQueue(this)
 
-        srtransaksiBank = findViewById(R.id.sr_transaksiBank)
+        srpembayaran = findViewById(R.id.sr_pembayaran)
 
 
-        srtransaksiBank?.setOnRefreshListener (SwipeRefreshLayout.OnRefreshListener { allMahasiswa() })
+        srpembayaran?.setOnRefreshListener (SwipeRefreshLayout.OnRefreshListener { allMahasiswa() })
 
 
         val fabAdd = findViewById<FloatingActionButton>(R.id.fab_add)
         fabAdd.setOnClickListener {
-            val i = Intent(this@TransaksiView,  BuktiTransaksi::class.java)
+            val i = Intent(this@PembayaranView,  Pembayaran::class.java)
             startActivityForResult(i, LAUNCH_ADD_ACTIVITY)
         }
 
 
 
-        val rvProduk = findViewById<RecyclerView>(R.id.rv_transaksiBank)
-        adapter = TransaksiAdapter(ArrayList(), this)
+        val rvProduk = findViewById<RecyclerView>(R.id.rv_pembayaran)
+        adapter = PembayaranAdapter(ArrayList(), this)
         rvProduk.layoutManager = LinearLayoutManager(this)
         rvProduk.adapter = adapter
         allMahasiswa()
     }
 
     private fun allMahasiswa(){
-        srtransaksiBank!!.isRefreshing = true
-        val stringRequest : StringRequest = object: StringRequest(Method.GET, transaksiBankApi.GET_ALL_URL,
+        srpembayaran!!.isRefreshing = true
+        val stringRequest : StringRequest = object: StringRequest(Method.GET, pembayaranApi.GET_ALL_URL,
             Response.Listener { response ->
-            val gson = Gson()
+                val gson = Gson()
                 val jsonObject = JSONObject(response)
 
-            var transaksi : Array<transaksiBank> = gson.fromJson(
-                jsonObject.getJSONArray("data").toString(),
-                Array<transaksiBank>::class.java
-            )
+                var pembayaran : Array<metodePembayaran> = gson.fromJson(
+                    jsonObject.getJSONArray("data").toString(),
+                    Array<metodePembayaran>::class.java
+                )
 
 
-            adapter!!.setTransaksiList(transaksi)
+                adapter!!.setPembayaranList(pembayaran)
 
-            srtransaksiBank!!.isRefreshing = false
+                srpembayaran!!.isRefreshing = false
 
-            if(!transaksi.isEmpty())
-                Toast.makeText(this@TransaksiView, "Data berhasil diambil", Toast.LENGTH_SHORT).show()
-            else
-                Toast.makeText(this@TransaksiView, "Data Kosong!", Toast.LENGTH_SHORT).show()
+                if(!pembayaran.isEmpty())
+                    Toast.makeText(this@PembayaranView, "Data berhasil diambil", Toast.LENGTH_SHORT).show()
+                else
+                    Toast.makeText(this@PembayaranView, "Data Kosong!", Toast.LENGTH_SHORT).show()
 
-        }, Response.ErrorListener { error ->
-            srtransaksiBank!!.isRefreshing = false
-            try {
-                val responseBody =
-                    String(error.networkResponse.data, StandardCharsets.UTF_8)
-                val errors = JSONObject(responseBody)
-                Toast.makeText(this@TransaksiView, errors.getString("message"), Toast.LENGTH_SHORT).show()
-            } catch (e: Exception){
-                Toast.makeText(this@TransaksiView, e.message, Toast.LENGTH_SHORT).show()
-            }
-        }) {
+            }, Response.ErrorListener { error ->
+                srpembayaran!!.isRefreshing = false
+                try {
+                    val responseBody =
+                        String(error.networkResponse.data, StandardCharsets.UTF_8)
+                    val errors = JSONObject(responseBody)
+                    Toast.makeText(this@PembayaranView, errors.getString("message"), Toast.LENGTH_SHORT).show()
+                } catch (e: Exception){
+                    Toast.makeText(this@PembayaranView, e.message, Toast.LENGTH_SHORT).show()
+                }
+            }) {
             @Throws(AuthFailureError::class)
             override fun getHeaders(): Map<String, String> {
                 val headers = HashMap<String, String>()
@@ -105,16 +100,16 @@ class TransaksiView : AppCompatActivity() {
         queue!!.add(stringRequest)
     }
 
-    public fun deleteTransaksi(id: Long){
+    public fun deletePembayaran(id: Long){
 
         val stringRequest: StringRequest = object :
-            StringRequest(Method.DELETE, transaksiBankApi.DELETE_URL+id, Response.Listener { response ->
+            StringRequest(Method.DELETE, pembayaranApi.DELETE_URL+id, Response.Listener { response ->
 
 
                 val gson = Gson()
-                var mahasiswa = gson.fromJson(response, transaksiBank::class.java)
+                var mahasiswa = gson.fromJson(response, metodePembayaran::class.java)
                 if(mahasiswa != null)
-                    Toast.makeText(this@TransaksiView, "Data Berhasil Dihapus", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PembayaranView, "Data Berhasil Dihapus", Toast.LENGTH_SHORT).show()
 
                 allMahasiswa()
             }, Response.ErrorListener { error ->
@@ -122,9 +117,9 @@ class TransaksiView : AppCompatActivity() {
                 try {
                     val responseBody = String(error.networkResponse.data, StandardCharsets.UTF_8)
                     val errors = JSONObject(responseBody)
-                    Toast.makeText(this@TransaksiView, errors.getString("message"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PembayaranView, errors.getString("message"), Toast.LENGTH_SHORT).show()
                 } catch (e: java.lang.Exception){
-                    Toast.makeText(this@TransaksiView, e.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PembayaranView, e.message, Toast.LENGTH_SHORT).show()
                 }
             }){
             @Throws(AuthFailureError::class)

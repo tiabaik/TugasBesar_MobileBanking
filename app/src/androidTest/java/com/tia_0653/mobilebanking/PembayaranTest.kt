@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
@@ -25,18 +24,18 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class BuktiTransaksiTest {
+class PembayaranTest {
 
     @Rule
     @JvmField
-    var mActivityScenarioRule = ActivityScenarioRule(BuktiTransaksi::class.java)
+    var mActivityScenarioRule = ActivityScenarioRule(Pembayaran::class.java)
 
     @Test
-    fun buktiTransaksiTest() {
+    fun pembayaranTest() {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        Thread.sleep(500)
+        Thread.sleep(700)
 
         val materialButton = onView(
             allOf(
@@ -57,6 +56,27 @@ class BuktiTransaksiTest {
         materialButton.perform(click())
         onView(isRoot()).perform(waitFor(3000))
 
+        val checkableImageButton = onView(
+            allOf(
+                withId(com.google.android.material.R.id.text_input_end_icon),
+                withContentDescription("Show dropdown menu"),
+                childAtPosition(
+                    childAtPosition(
+                        withClassName(`is`("android.widget.LinearLayout")),
+                        1
+                    ),
+                    0
+                ),
+                isDisplayed()
+            )
+        )
+        checkableImageButton.perform(click())
+
+        val materialTextView = onData(anything())
+            .inRoot(isPlatformPopup())
+            .atPosition(2)
+        materialTextView.perform(click())
+
         val materialButton2 = onView(
             allOf(
                 withId(R.id.btn_save), withText("Simpan"),
@@ -76,26 +96,19 @@ class BuktiTransaksiTest {
         materialButton2.perform(click())
         onView(isRoot()).perform(waitFor(3000))
 
-        val materialAutoCompleteTextView = onView(
+        val textInputEditText = onView(
             allOf(
-                withId(R.id.et_namaBank),
+                withId(R.id.et_kode),
                 childAtPosition(
                     childAtPosition(
-                        withId(R.id.layout_namaBank),
+                        withId(R.id.layout_kode),
                         0
                     ),
                     0
                 )
             )
         )
-        materialAutoCompleteTextView.perform(scrollTo(), click())
-        onView(isRoot()).perform(waitFor(3000))
-
-        val materialTextView = onData(anything())
-            .inRoot(isPlatformPopup())
-            .atPosition(0)
-        materialTextView.perform(click())
-        onView(isRoot()).perform(waitFor(3000))
+        textInputEditText.perform(scrollTo(), replaceText("789089"), closeSoftKeyboard())
 
         val materialButton3 = onView(
             allOf(
@@ -116,81 +129,6 @@ class BuktiTransaksiTest {
         materialButton3.perform(click())
         onView(isRoot()).perform(waitFor(3000))
 
-
-        val textInputEditText = onView(
-            allOf(
-                withId(R.id.et_tanggal_transaksi),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.layout_tanggal_transaksi),
-                        0
-                    ),
-                    0
-                )
-            )
-        )
-        textInputEditText.perform(scrollTo(), replaceText("12/12/2022"), closeSoftKeyboard())
-        onView(isRoot()).perform(waitFor(3000))
-
-        val materialButton15 = onView(
-            allOf(
-                withId(R.id.btn_save), withText("Simpan"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.ll_button),
-                        childAtPosition(
-                            withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-                            1
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        materialButton15.perform(click())
-        onView(isRoot()).perform(waitFor(3000))
-
-        val materialAutoCompleteTextView2 = onView(
-            allOf(
-                withId(R.id.et_kode_bank),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.layout_kodeBank),
-                        0
-                    ),
-                    0
-                )
-            )
-        )
-        materialAutoCompleteTextView2.perform(scrollTo(), click())
-        onView(isRoot()).perform(waitFor(3000))
-
-        val materialTextView2 = onData(anything())
-            .inRoot(isPlatformPopup())
-            .atPosition(1)
-        materialTextView2.perform(click())
-        onView(isRoot()).perform(waitFor(3000))
-
-        val materialButton11 = onView(
-            allOf(
-                withId(R.id.btn_save), withText("Simpan"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.ll_button),
-                        childAtPosition(
-                            withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-                            1
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        materialButton11.perform(click())
-        onView(isRoot()).perform(waitFor(3000))
-
         val textInputEditText2 = onView(
             allOf(
                 withId(R.id.et_jumlah_uang),
@@ -203,8 +141,7 @@ class BuktiTransaksiTest {
                 )
             )
         )
-        textInputEditText2.perform(scrollTo(), replaceText("1000"), closeSoftKeyboard())
-        onView(isRoot()).perform(waitFor(3000))
+        textInputEditText2.perform(scrollTo(), replaceText("120000"), closeSoftKeyboard())
 
         val materialButton4 = onView(
             allOf(

@@ -64,6 +64,12 @@
             android:name=".MapMain"
             android:exported="false" />
         <activity
+            android:name=".PembayaranView"
+            android:exported="false" />
+        <activity
+            android:name=".Pembayaran"
+            android:exported="true" />
+        <activity
             android:name=".EditProfile"
             android:exported="false" />
         <activity

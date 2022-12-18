@@ -47,6 +47,8 @@ class FragmentProfile : Fragment() {
 //        val TTlTxt :TextView =  view.findViewById(R.id.tvttl)
 //        val NoTxt :TextView =  view.findViewById(R.id.tvnohp)
         val btnEdit : Button = view.findViewById(R.id.editBTN)
+        val btnMap : Button = view.findViewById(R.id.Map)
+
 
 //        nameTxt.setText()
 //        emailTxt.setText(db?.UserDao()?.getUser(id!!.toInt())?.Email.toString())
@@ -64,6 +66,12 @@ class FragmentProfile : Fragment() {
             }
 
         }
+
+        btnMap.setOnClickListener(){
+            (activity as HomeActivity).setActivity(MapMain())
+        }
+
+
     }
 
     private fun getuserBankById(id: Long) {
@@ -79,16 +87,16 @@ class FragmentProfile : Fragment() {
                         userBank::class.java
                     )
 
-                    val nameTxt :TextView =  requireView().findViewById(R.id.tvname)
-                    val emailTxt :TextView =  requireView().findViewById(R.id.tvemail)
-                    val TTlTxt :TextView =  requireView().findViewById(R.id.tvttl)
-                    val NoTxt :TextView =  requireView().findViewById(R.id.tvnohp)
+                    val nameTxt :TextView? =  view?.findViewById(R.id.tvname)
+                    val emailTxt :TextView? =  view?.findViewById(R.id.tvemail)
+                    val TTlTxt :TextView? =  view?.findViewById(R.id.tvttl)
+                    val NoTxt :TextView? =  view?.findViewById(R.id.tvnohp)
 
 
-                    nameTxt.setText(userBank.username)
-                    emailTxt.setText(userBank.alamat_email)
-                    TTlTxt.setText(userBank.tanggal_lahir)
-                    NoTxt.setText(userBank.nomor_handphone)
+                    nameTxt?.setText(userBank.username)
+                    emailTxt?.setText(userBank.alamat_email)
+                    TTlTxt?.setText(userBank.tanggal_lahir)
+                    NoTxt?.setText(userBank.nomor_handphone)
 
                     FancyToast.makeText(
                         requireActivity(),
@@ -127,9 +135,9 @@ class FragmentProfile : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
         val id = sharedPreferences?.getString("id", "")
 
         getuserBankById(id!!.toLong())
+
     }
 }

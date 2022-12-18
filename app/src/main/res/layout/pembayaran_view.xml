@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".TransaksiView">
+    tools:context=".PembayaranView">
 
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/sr_transaksiBank"
+        android:id="@+id/sr_pembayaran"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
@@ -22,13 +22,13 @@
         app:layout_constraintVertical_bias="0.0">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_transaksiBank"
+            android:id="@+id/rv_pembayaran"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingHorizontal="12dp"
             android:paddingBottom="88dp"
-            tools:listitem="@layout/item_transaksi"/>
+            tools:listitem="@layout/item_pembayaran"/>
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
